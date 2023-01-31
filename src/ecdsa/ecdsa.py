@@ -65,9 +65,10 @@ modified as part of the python-ecdsa package.
 """
 
 from six import int2byte, b
+import logging
 from . import ellipticcurve
 from . import numbertheory
-from .util import bit_length
+from .util import bit_length, format_bytes, format_int_val
 from ._compat import remove_whitespace
 
 
@@ -247,16 +248,23 @@ class Private_key(object):
 
         G = self.public_key.generator
         n = G.order()
+        logging.info('%s'%(format_int_val(n,'order')))
         k = random_k % n
         # Fix the bit-length of the random nonce,
         # so that it doesn't leak via timing.
         # This does not change that ks = k mod n
         ks = k + n
         kt = ks + n
+        logging.info('G %s'%(G))
+
         if bit_length(ks) == bit_length(n):
+            logging.info(' ')
             p1 = kt * G
+            logging.info(' ')
         else:
+            logging.info(' ')
             p1 = ks * G
+            logging.info(' ')        
         r = p1.x() % n
         if r == 0:
             raise RSZeroError("amazingly unlucky random number r")

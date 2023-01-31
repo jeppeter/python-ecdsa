@@ -3,6 +3,7 @@ Primary classes for performing signing and verification operations.
 """
 
 import binascii
+import logging
 from hashlib import sha1
 import os
 from six import PY2, b
@@ -13,7 +14,7 @@ from . import ellipticcurve
 from .curves import NIST192p, Curve, Ed25519, Ed448
 from .ecdsa import RSZeroError
 from .util import string_to_number, number_to_string, randrange
-from .util import sigencode_string, sigdecode_string, bit_length
+from .util import sigencode_string, sigdecode_string, bit_length , format_bytes, format_int_val
 from .util import (
     oid_ecPublicKey,
     encoded_oid_ecPublicKey,
@@ -69,8 +70,11 @@ def _truncate_and_convert_digest(digest, curve, allow_truncate):
     else:
         digest = digest[: curve.baselen]
     number = string_to_number(digest)
+    logging.info('%s'%(format_int_val(number,'number')))
+    logging.info('allow_truncate %s'%(allow_truncate))
     if allow_truncate:
         max_length = bit_length(curve.order)
+        logging.info('max_length [%d]'%(max_length))
         # we don't use bit_length(number) as that truncates leading zeros
         length = len(digest) * 8
 
@@ -84,6 +88,7 @@ def _truncate_and_convert_digest(digest, curve, allow_truncate):
         #
         # as such, we need to shift-out the low-order bits:
         number >>= max(0, length - max_length)
+        logging.info('%s'%(format_int_val(number,'truncate number')))
 
     return number
 
@@ -1515,6 +1520,8 @@ class SigningKey(object):
         if isinstance(self.curve.curve, CurveEdTw):
             return self.sign_deterministic(data)
         h = hashfunc(data).digest()
+        logging.info('%s'%(format_bytes(h,'h')))
+        logging.info('entropy [%s]'%(entropy))
         return self.sign_digest(h, entropy, sigencode, k, allow_truncate)
 
     def sign_digest(

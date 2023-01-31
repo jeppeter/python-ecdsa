@@ -47,6 +47,7 @@ except ImportError:  # pragma: no branch
         GMPY = False
 
 
+import logging
 from six import python_2_unicode_compatible
 from . import numbertheory
 from ._compat import normalise_bytes, int_to_bytes, bit_length, bytes_to_int
@@ -869,6 +870,7 @@ class PointJacobi(AbstractPoint):
         return X3, Y3, Z3
 
     def __radd__(self, other):
+        logging.info(' ')
         """Add other to self."""
         return self + other
 
@@ -889,6 +891,7 @@ class PointJacobi(AbstractPoint):
         return self._add_with_z_ne(X1, Y1, Z1, X2, Y2, Z2, p)
 
     def __add__(self, other):
+        logging.info(' ')
         """Add two points on elliptic curve."""
         if self == INFINITY:
             return other
@@ -910,6 +913,7 @@ class PointJacobi(AbstractPoint):
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
     def __rmul__(self, other):
+        logging.info('other [%s]'%(other))
         """Multiply point by an integer."""
         return self * other
 
@@ -933,6 +937,7 @@ class PointJacobi(AbstractPoint):
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
     def __mul__(self, other):
+        logging.info('other [%s]'%(other))
         """Multiply point by an integer."""
         if not self.__coords[1] or not other:
             return INFINITY
@@ -966,6 +971,7 @@ class PointJacobi(AbstractPoint):
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
     def mul_add(self, self_mul, other, other_mul):
+        logging.info(' ')
         """
         Do two multiplications at the same time, add results.
 
@@ -1064,6 +1070,7 @@ class PointJacobi(AbstractPoint):
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
     def __neg__(self):
+        logging.info(' ')
         """Return negated point."""
         x, y, z = self.__coords
         return PointJacobi(self.__curve, x, -y, z, self.__order)

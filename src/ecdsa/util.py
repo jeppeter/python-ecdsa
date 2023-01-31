@@ -4,6 +4,7 @@ import os
 import math
 import binascii
 import sys
+import logging
 from hashlib import sha256
 from six import PY2, int2byte, b, next
 from . import der
@@ -16,6 +17,81 @@ from ._compat import normalise_bytes
 
 oid_ecPublicKey = (1, 2, 840, 10045, 2, 1)
 encoded_oid_ecPublicKey = der.encode_oid(*oid_ecPublicKey)
+
+def format_bytes(inb,note=''):
+    rets = '%s'%(note)
+    idx = 0
+    lastidx = 0
+    for b in inb:
+        if (idx % 16) == 0:
+            if idx > 0:
+                rets += '    '
+                while lastidx != idx:
+                    curv = inb[lastidx]
+                    if curv >= ord(' ') and curv <= ord('~'):
+                        rets += '%c'%(curv)
+                    else:
+                        rets += '.'
+                    lastidx += 1
+            rets += '\n0x%08x'%(idx)
+        rets += ' 0x%02x'%(b)
+        idx += 1
+
+    if idx != lastidx:
+        while (idx % 16) != 0:
+            rets += '     '
+            idx += 1
+        rets += '    '
+        while lastidx < len(inb):
+            curv = inb[lastidx]
+            if curv >= ord(' ') and curv <= ord('~'):
+                rets += '%c'%(curv)
+            else:
+                rets += '.'
+            lastidx += 1
+        rets += '\n'
+    return rets
+
+def format_int_val(intv, note=''):
+    sarr = []
+    lastv = intv
+    while lastv > 0:
+        curv = lastv & 0xff
+        sarr.insert(0,curv)
+        lastv = lastv >> 8
+
+    rets = '%s'%(note)
+    idx = 0
+    lastidx = 0
+    while idx < len(sarr):
+        if (idx % 16) == 0:
+            if idx > 0:
+                rets += '    '
+                while lastidx != idx:
+                    curv = sarr[lastidx]
+                    if curv >= ord(' ') and curv <= ord('~'):
+                        rets += '%c'%(curv)
+                    else:
+                        rets += '.'
+                    lastidx += 1
+            rets += '\n0x%08x'%(idx)
+        rets += ' 0x%02x'%(sarr[idx])
+        idx += 1
+
+    if idx != lastidx:
+        while (idx % 16) != 0:
+            rets += '     '
+            idx += 1
+        rets += '    '
+        while lastidx < len(sarr):
+            curv = sarr[lastidx]
+            if curv >= ord(' ') and curv <= ord('~'):
+                rets += '%c'%(curv)
+            else:
+                rets += '.'
+            lastidx += 1
+        rets += '\n'
+    return rets
 
 # RFC5480:
 # The ECDH algorithm uses the following object identifier:
@@ -250,6 +326,8 @@ def sigencode_string(r, s, order):
     # for any given curve, the size of the signature numbers is
     # fixed, so just use simple concatenation
     r_str, s_str = sigencode_strings(r, s, order)
+    logging.info('%s'%(format_bytes(r_str,'r_str')))
+    logging.info('%s'%(format_bytes(s_str,'s_str')))
     return r_str + s_str
 
 
