@@ -347,7 +347,7 @@ _r = int(remove_whitespace("DB7C 2ABF62E3 5E7628DF AC6561C5"), 16)
 _h = 1
 curve_112r1 = ellipticcurve.CurveFp(_p, _a, _b, _h)
 generator_112r1 = ellipticcurve.PointJacobi(
-    curve_112r1, _Gx, _Gy, 1, _r, generator=True
+    curve_112r1, _Gx, _Gy, 1, _r, generator=False
 )
 
 

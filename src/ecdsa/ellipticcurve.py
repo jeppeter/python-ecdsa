@@ -37,12 +37,12 @@ from __future__ import division
 try:
     from gmpy2 import mpz
 
-    GMPY = True
+    GMPY = False
 except ImportError:  # pragma: no branch
     try:
         from gmpy import mpz
 
-        GMPY = True
+        GMPY = False
     except ImportError:
         GMPY = False
 
@@ -137,7 +137,7 @@ class CurveFp(object):
         return (y * y - ((x * x + self.__a) * x + self.__b)) % self.__p == 0
 
     def __str__(self):
-        return "CurveFp(p=%d, a=%d, b=%d, h=%d)" % (
+        return "CurveFp(p=0x%x, a=0x%x, b=0x%x, h=0x%x)" % (
             self.__p,
             self.__a,
             self.__b,
@@ -530,6 +530,13 @@ class PointJacobi(AbstractPoint):
             self.__order = order
         self.__generator = generator
         self.__precompute = []
+
+    def __str__(self):
+        s = 'PointJacobi\ncurve %s;'%(self.__curve)
+        s += 'oder 0x%x;'%(self.__order)
+        s += 'coords (0x%x,0x%x,0x%x);'%(self.__coords[0],self.__coords[1],self.__coords[2])
+        s += 'generator %s;'%(self.__generator)
+        return s
 
     @classmethod
     def from_bytes(
