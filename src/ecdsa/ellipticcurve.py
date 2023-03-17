@@ -714,7 +714,6 @@ class PointJacobi(AbstractPoint):
         p = self.__curve.p()
         z_inv = numbertheory.inverse_mod(z, p)
         zz_inv = z_inv * z_inv % p
-        logging.info('x 0x%x y 0x%x'%(x,y))
         x = x * zz_inv % p
         y = y * zz_inv * z_inv % p
         self.__coords = (x, y, 1)
@@ -854,6 +853,7 @@ class PointJacobi(AbstractPoint):
         J = H * I
         r = 2 * (S2 - Y1) % p
         if not r and not H:
+            logging.info('r or H == 0')
             return self._double_with_z_1(X2, Y2, p, self.__curve.a())
         V = X1 * I
         X3 = (r * r - J - 2 * V) % p
@@ -878,12 +878,16 @@ class PointJacobi(AbstractPoint):
         J = H * I % p
         r = 2 * (S2 - S1) % p
         if not H and not r:
+            logging.info('not H r')
             return self._double(X1, Y1, Z1, p, self.__curve.a())
         V = U1 * I
         X3 = (r * r - J - 2 * V) % p
         Y3 = (r * (V - X3) - 2 * S1 * J) % p
         Z3 = ((Z1 + Z2) ** 2 - Z1Z1 - Z2Z2) * H % p
-
+        logging.info('Z1Z1 0x%x Z2Z2 0x%x U1 0x%x U2 0x%x'%(Z1Z1,Z2Z2,U1,U2))
+        logging.info('S1 0x%x S2 0x%x H 0x%x I 0x%x'%(S1,S2,H,I))
+        logging.info('J 0x%x r 0x%x V 0x%x'%(J,r,V))
+        logging.info('X3 0x%x Y3 0x%x Z3 0x%x'%(X3,Y3,Z3))
         return X3, Y3, Z3
 
     def __radd__(self, other):
@@ -929,8 +933,10 @@ class PointJacobi(AbstractPoint):
         p = self.__curve.p()
         X1, Y1, Z1 = self.__coords
         X2, Y2, Z2 = other.__coords
+        logging.info('X1 0x%x Y1 0x%x Z1 0x%x X2 0x%x Y2 0x%x Z2 0x%x p 0x%x'%(X1,Y1,Z1,X2,Y2,Z2,p))
 
         X3, Y3, Z3 = self._add(X1, Y1, Z1, X2, Y2, Z2, p)
+        logging.info('X3 0x%x Y3 0x%x Z3 0x%x'%(X3,Y3,Z3))
 
         if not Y3 or not Z3:
             return INFINITY
