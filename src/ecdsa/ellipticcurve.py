@@ -853,6 +853,8 @@ class PointJacobi(AbstractPoint):
         X3 = (r * r - J - 2 * V) % p
         Y3 = (r * (V - X3) - 2 * Y1 * J) % p
         Z3 = ((Z1 + H) ** 2 - Z1Z1 - HH) % p
+        logging.info('H 0x%x HH 0x%x I 0x%x J 0x%x r 0x%x'%(H,HH,I,J,r))
+        logging.info('V 0x%x X3 0x%x Y3 0x%x Z3 0x%x'%(V,X3,Y3,Z3))
         return X3, Y3, Z3
 
     def _add_with_z_ne(self, X1, Y1, Z1, X2, Y2, Z2, p):
