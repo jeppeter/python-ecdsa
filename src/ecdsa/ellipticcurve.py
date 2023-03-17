@@ -602,11 +602,13 @@ class PointJacobi(AbstractPoint):
         coord_x, coord_y, coord_z = self.__coords
         doubler = PointJacobi(self.__curve, coord_x, coord_y, coord_z, order)
         order *= 2
+        logging.info('[%d] x 0x%x y 0x%x'%(len(precompute), doubler.x(),doubler.y()))
         precompute.append((doubler.x(), doubler.y()))
 
         while i < order:
             i *= 2
             doubler = doubler.double().scale()
+            logging.info('[%d] x 0x%x y 0x%x'%(len(precompute), doubler.x(),doubler.y()))
             precompute.append((doubler.x(), doubler.y()))
 
         self.__precompute = precompute
@@ -712,9 +714,11 @@ class PointJacobi(AbstractPoint):
         p = self.__curve.p()
         z_inv = numbertheory.inverse_mod(z, p)
         zz_inv = z_inv * z_inv % p
+        logging.info('x 0x%x y 0x%x'%(x,y))
         x = x * zz_inv % p
         y = y * zz_inv * z_inv % p
         self.__coords = (x, y, 1)
+        logging.info('z_inv 0x%x zz_inv 0x%x x 0x%x y 0x%x p 0x%x'%(z_inv,zz_inv,x,y,p))
         return self
 
     def to_affine(self):
@@ -799,8 +803,10 @@ class PointJacobi(AbstractPoint):
         p, a = self.__curve.p(), self.__curve.a()
 
         X3, Y3, Z3 = self._double(X1, Y1, Z1, p, a)
+        logging.info('X3 0x%x Y3 0x%x Z3 0x%x'%(X3,Y3,Z3))
 
         if not Y3 or not Z3:
+            logging.info('INFINITY')
             return INFINITY
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
