@@ -1274,7 +1274,7 @@ class Point(AbstractPoint):
     def __str__(self):
         if self == INFINITY:
             return "infinity"
-        return "(%d,%d)" % (self.__x, self.__y)
+        return "(0x%x,0x%x)" % (self.__x, self.__y)
 
     def double(self):
         """Return a new point that is twice the old."""
