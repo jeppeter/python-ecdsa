@@ -717,7 +717,7 @@ class PointJacobi(AbstractPoint):
         x = x * zz_inv % p
         y = y * zz_inv * z_inv % p
         self.__coords = (x, y, 1)
-        logging.info('z_inv 0x%x zz_inv 0x%x x 0x%x y 0x%x p 0x%x'%(z_inv,zz_inv,x,y,p))
+        #logging.info('z_inv 0x%x zz_inv 0x%x x 0x%x y 0x%x p 0x%x'%(z_inv,zz_inv,x,y,p))
         return self
 
     def to_affine(self):
@@ -771,7 +771,7 @@ class PointJacobi(AbstractPoint):
     def _double(self, X1, Y1, Z1, p, a):
         """Add a point to itself, arbitrary z."""
         if Z1 == 1:
-            logging.info(' ')
+            #logging.info(' ')
             return self._double_with_z_1(X1, Y1, p, a)
         if not Y1 or not Z1:
             return 0, 0, 1
@@ -789,7 +789,7 @@ class PointJacobi(AbstractPoint):
         # X3 = T
         Y3 = (M * (S - T) - 8 * YYYY) % p
         Z3 = ((Y1 + Z1) ** 2 - YY - ZZ) % p
-        logging.info(' ')
+        #logging.info(' ')
         return T, Y3, Z3
 
     def double(self):
@@ -859,8 +859,8 @@ class PointJacobi(AbstractPoint):
         X3 = (r * r - J - 2 * V) % p
         Y3 = (r * (V - X3) - 2 * Y1 * J) % p
         Z3 = ((Z1 + H) ** 2 - Z1Z1 - HH) % p
-        logging.info('H 0x%x HH 0x%x I 0x%x J 0x%x r 0x%x'%(H,HH,I,J,r))
-        logging.info('V 0x%x X3 0x%x Y3 0x%x Z3 0x%x'%(V,X3,Y3,Z3))
+        #logging.info('H 0x%x HH 0x%x I 0x%x J 0x%x r 0x%x'%(H,HH,I,J,r))
+        #logging.info('V 0x%x X3 0x%x Y3 0x%x Z3 0x%x'%(V,X3,Y3,Z3))
         return X3, Y3, Z3
 
     def _add_with_z_ne(self, X1, Y1, Z1, X2, Y2, Z2, p):
@@ -898,7 +898,7 @@ class PointJacobi(AbstractPoint):
     def _add(self, X1, Y1, Z1, X2, Y2, Z2, p):
         """add two points, select fastest method."""
         if not Y1 or not Z1:
-            logging.info(' ')
+            #logging.info(' ')
             return X2, Y2, Z2
         if not Y2 or not Z2:
             logging.info(' ')
@@ -913,7 +913,7 @@ class PointJacobi(AbstractPoint):
             logging.info(' ')
             return self._add_with_z2_1(X2, Y2, Z2, X1, Y1, p)
         if Z2 == 1:
-            logging.info(' ')
+            #logging.info(' ')
             return self._add_with_z2_1(X1, Y1, Z1, X2, Y2, p)
         logging.info(' ')
         return self._add_with_z_ne(X1, Y1, Z1, X2, Y2, Z2, p)
@@ -967,7 +967,7 @@ class PointJacobi(AbstractPoint):
         return PointJacobi(self.__curve, X3, Y3, Z3, self.__order)
 
     def __mul__(self, other):
-        logging.info('other [0x%x]'%(other))
+        #logging.info('other [0x%x]'%(other))
         """Multiply point by an integer."""
         if not self.__coords[1] or not other:
             return INFINITY
@@ -982,7 +982,7 @@ class PointJacobi(AbstractPoint):
 
         self = self.scale()
         X2, Y2, _ = self.__coords
-        logging.info('X2 0x%x Y2 0x%x'%(X2,Y2))
+        #logging.info('X2 0x%x Y2 0x%x'%(X2,Y2))
         X3, Y3, Z3 = 0, 0, 1
         p, a = self.__curve.p(), self.__curve.a()
         _double = self._double
@@ -991,14 +991,14 @@ class PointJacobi(AbstractPoint):
         # is quicker, reverse the NAF order
         idx = 0
         for i in reversed(self._naf(other)):
-            logging.info('[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
+            #logging.info('[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
             X3, Y3, Z3 = _double(X3, Y3, Z3, p, a)
-            logging.info('after[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
+            #logging.info('after[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
             if i < 0:
                 X3, Y3, Z3 = _add(X3, Y3, Z3, X2, -Y2, 1, p)
             elif i > 0:
                 X3, Y3, Z3 = _add(X3, Y3, Z3, X2, Y2, 1, p)
-            logging.info('last[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
+            #logging.info('last[%d][%d] (X3 :0x%x , Y3 : 0x%x, Z3 : 0x%x) '%(idx,i,X3,Y3,Z3))
             idx += 1
 
         if not Y3 or not Z3:

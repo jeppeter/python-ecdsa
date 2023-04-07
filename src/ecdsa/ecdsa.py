@@ -248,7 +248,7 @@ class Private_key(object):
 
         G = self.public_key.generator
         n = G.order()
-        logging.info('%s'%(format_int_val(n,'order')))
+        #logging.info('%s'%(format_int_val(n,'order')))
         k = random_k % n
         # Fix the bit-length of the random nonce,
         # so that it doesn't leak via timing.
